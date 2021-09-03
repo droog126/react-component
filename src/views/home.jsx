@@ -8,9 +8,9 @@ export default function home() {
             <div className=' text-center'>Hello,World</div>
             
             
-            <div className='flex justify-start'>
-                <NavLink to={'/components'} className='mx-2 text-gray-400' activeClassName='text-red-600'>组件库</NavLink>
-                <NavLink to={'/store'} className='mx-2 text-gray-400' activeClassName='text-red-600'>store</NavLink>
+            <div className='flex justify-start text-gray-400'>
+                <NavLink to={'/components'} className='mx-2' activeClassName='text-red-600'>组件库</NavLink>
+                <NavLink to={'/store'} className='mx-2' activeClassName='text-red-600'>store</NavLink>
             </div>
         </Fragment>
     )

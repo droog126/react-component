@@ -5,10 +5,10 @@ export default function ButtonGroup(props) {
 
     return (
         <>
-            <ul className='flex'>
+            <ul className='flex text-gray-400'>
                 {selectGroup.map((val, index) => {
                     // console.log('有优化？')
-                    return <li key={index} className={` ${select == index ? "text-red-600" : "hover:text-black"}  cursor-pointer text-gray-400 mx-2`} onClick={
+                    return <li key={index} className={` ${select == index ? "text-red-600" : "hover:text-black"}  cursor-pointer mx-2`} onClick={
                         () => {
                             getSelect(index)
                         }

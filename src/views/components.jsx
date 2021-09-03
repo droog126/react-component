@@ -1,4 +1,4 @@
-import React,{useState,Suspense,useCallback,useMemo, createElement, Fragment, useEffect} from 'react'
+import React,{useState,Suspense,useCallback,useMemo, createElement, Fragment, useEffect,useRef} from 'react'
 import MInput from 'components/Input'
 import ErrorBoundary from '../components/ErrorBoundary'
 import { JsonTable } from 'react-json-to-html';
@@ -7,7 +7,6 @@ import MButtonGroup from 'components/ButtonGroup'
 
 export default function View({}) {
 
-    let { path, url } = useRouteMatch();
 
     const [componentName, setComponentName] = useState("Button");
 
@@ -29,8 +28,32 @@ export default function View({}) {
     const DynamicComponent = useMemo(() => React.lazy(() => import(`../components/${componentName}.jsx`)), [state])
     const handleChangeComponentProps = useCallback((e) => { setComponentProps(e.target.value) }, []);
     const handleChangeComponentName = useCallback((e) => {  setComponentName(e.target.value) }, []);
-    const handleComponentChange = useCallback(() => { setState(-state) }, [state])
+    const handleComponentChange = useCallback(() => { 
+        saveComponentCache.current(componentName,componentProps);
+        setState(-state)
+     }, [state])
 
+    useEffect(() => {
+        loadComponentCache();
+    }, [])
+
+    const loadComponentCache = () =>{
+        let data = localStorage.getItem("componentCache");
+        if(data){
+            data=JSON.parse(data);
+            console.log(data);
+            setComponentName(data.name);
+            setComponentProps(data.props);
+        }
+    }
+
+    const saveComponentCache = useRef((name,props)=>{
+        let data={
+            name:name,
+            props:props
+        }
+        localStorage.setItem('componentCache',JSON.stringify(data));
+    })
     
 
     const selectGroup = ['组件名修改', '组件属性修改'];
@@ -58,24 +81,12 @@ export default function View({}) {
 
     return (
         <Fragment>
-            {
-            /* <div className='flex justify-around'>
-                <div>
-                    {componentName}
-                </div>
-                <div>
-                    {state}
-                </div>
-                <div>
-                    {componentProps}
-                </div>
-                <input type="text" value={correctComponentProps } readOnly />
-            </div>
-             */
-            }
 
             <div className='flex h-80 justify-start border-2 border-black w-screen'>
-                <div className='w-2/3 flex justify-center items-center h-80 flex-shrink-0'>
+                <div className='w-2/3 flex justify-center items-center h-80 flex-shrink-0 relative'>
+                    <div className='absolute inset-0'>
+                        {componentName}
+                    </div>
                     <ErrorBoundary>
                         <Suspense fallback={<div>loding...</div>}>
                             {createElement(DynamicComponent,correctComponentProps)}
@@ -88,13 +99,8 @@ export default function View({}) {
             </div>
 
           
-           
-
-            
-         
-            
             <MButtonGroup getSelect={GetSelect} selectGroup={selectGroup} select={select}></MButtonGroup>
-            <SelectView updateDep={ {componentName, componentProps,handleComponentChange} }/>
+            <SelectView updateDep={ { componentName, componentProps, handleComponentChange} }/>
          
         </Fragment>
        
